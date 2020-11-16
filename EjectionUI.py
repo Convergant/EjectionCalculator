@@ -460,8 +460,13 @@ class UpdateUI:
         self.__frame.grid(row=0, column=0, rowspan=200, columnspan=30)
         self.name = "Update"
 
-        self.__update_button = tk.Button(self.__frame, command=self.__update_bodies, text="Update", width=10)
-        self.__update_button.grid(row=0, column=0)
+        self.name_box = TextBox(0, 0, self.__frame, label_text="Body Name", bg="white")
+        self.mass_box = IntInputBox(1, 0, self.__frame, label_text="Body Mass (kg)")
+        self.radius_box = IntInputBox(2, 0, self.__frame, label_text="Radius (m)")
+        self.apoapsis_box = IntInputBox(3, 0, self.__frame, label_text="Apoapsis (m)")
+        self.periapsis_box = IntInputBox(4, 0, self.__frame, label_text="Periapsis (m)")
+        self.host_box = DropDown(self.__frame, host_names[0], host_names + ["This body is a host"], row=5, column=0, label_text="Host Body")
+        self.colour_box = TextBox(6, 0, self.__frame, label_text="Body Colour", bg="white")
 
     def end(self):
         self.__frame.destroy()
@@ -495,6 +500,9 @@ class UI:
 
         else:
             self.switch_ui(UpdateUI())
+            del self.mode_switch_box
+            self.mode_switch_box = DropDown(root, "Update", mode_names, row=0, column=20, command=self.callback)
+
 
 
 if __name__ == "__main__":

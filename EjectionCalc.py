@@ -4,11 +4,10 @@ G = 6.67408 * (10 ** (-11))
 
 
 class Orbit:
-    def __init__(self, apoapsis, periapsis, host, inclination=0.0):
+    def __init__(self, apoapsis, periapsis, host):
         self.__apoapsis = apoapsis
         self.__periapsis = periapsis
         self.__SMA = (apoapsis + periapsis) / 2
-        self.__inclination = inclination
         self.__host = host
         self.__period = self.__calculate_period()
         self.__eccentricity = self.__calculate_eccentricity()
@@ -53,12 +52,6 @@ class Orbit:
     def get_eccentricity(self):
         return self.__eccentricity
 
-    def get_inclination(self):
-        return self.__inclination
-
-    def set_inclination(self, inclination):
-        self.__inclination = inclination
-
     def get_period(self):
         return self.__period
 
@@ -71,8 +64,8 @@ class Orbit:
 
 
 class Body(Orbit):
-    def __init__(self, mass, radius, apoapsis, periapsis, host, inclination=0.0, name="", colour="", alt=0):
-        super().__init__(apoapsis, periapsis, host, inclination)
+    def __init__(self, mass, radius, apoapsis, periapsis, host, name="", colour="", alt=0):
+        super().__init__(apoapsis, periapsis, host)
         self.__mass = mass
         self.__mu = G * mass
         self.__radius = radius
@@ -250,8 +243,15 @@ def read_body(body_name, give_body=True):
 def init_body(body_list, host_list):
     host = Body(float(host_list[1]), float(host_list[2]), 0, 0, name=host_list[0], host=None)
     return Body(float(body_list[1]), float(body_list[2]), float(body_list[3]), float(body_list[4]),
-                host=host, inclination=float(body_list[6]), name=body_list[0], colour=body_list[7],
-                alt=int(body_list[8]))
+                host=host, name=body_list[0], colour=body_list[6],
+                alt=int(body_list[7]))
+
+
+def get_hosts():
+    sql = "SELECT * FROM bodies WHERE host = ''"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    return [Body(c[1], c[2], 0, 0, name=c[0], host=None) for c in res]
 
 
 def greater(x, y):
@@ -270,6 +270,9 @@ mydb = mysql.connector.connect(
 )
 cursor = mydb.cursor()
 names = get_names()
+hosts = get_hosts()
+host_names = [c.get_name() for c in hosts]
+
 
 if __name__ == "__main__":
     Earth = read_body("planets.csv", "Earth")
